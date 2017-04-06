@@ -42,3 +42,4 @@ metadata
 # big stuff
 *.mov
 *.mp4
+src/com/mns/uima/internal/Tester.java
