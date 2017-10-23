@@ -6,9 +6,30 @@
   <analysisEngineMetaData>
     <name>NLUAEDescriptor</name>
     <description/>
-    <version>1.0.0</version>
+    <version>!PROJECT_VERSION</version>
     <vendor/>
     <configurationParameters defaultGroup="Configure" searchStrategy="language_fallback">
+      <configurationParameter>
+          <name>enable_default_entities</name>
+          <description>Enable entity level analysis with the default NLU model.</description>
+          <type>Boolean</type>
+          <multiValued>false</multiValued>
+          <mandatory>true</mandatory>
+        </configurationParameter>
+        <configurationParameter>
+          <name>enable_default_documentlevel</name>
+          <description>Enable document level analysis with the default NLU model.</description>
+          <type>Boolean</type>
+          <multiValued>false</multiValued>
+          <mandatory>true</mandatory>
+        </configurationParameter>
+        <configurationParameter>
+          <name>enable_custom_entities</name>
+          <description>Enable entity level analysis with a custom NLU model.</description>
+          <type>Boolean</type>
+          <multiValued>false</multiValued>
+          <mandatory>true</mandatory>
+        </configurationParameter>
       <configurationGroup names="Credentials">
         <configurationParameter>
           <name>username</name>
@@ -23,21 +44,7 @@
           <mandatory>true</mandatory>
         </configurationParameter>
       </configurationGroup>
-      <configurationGroup names="Entities">
-        <configurationParameter>
-          <name>model</name>
-          <description>Enter a custom model ID to override the default entity detection model otherwise set to "default". NOT IMPLEMENTED YET</description>
-          <type>String</type>
-          <multiValued>false</multiValued>
-          <mandatory>true</mandatory>
-        </configurationParameter>
-        <configurationParameter>
-          <name>entity_enable</name>
-          <description>Enable entity level analysis.</description>
-          <type>Boolean</type>
-          <multiValued>false</multiValued>
-          <mandatory>true</mandatory>
-        </configurationParameter>
+      <configurationGroup names="Entities">   
         <configurationParameter>
           <name>entity_sentiment</name>
           <description>Set this to true to enable sentiment analysis for detected entities.</description>
@@ -56,39 +63,63 @@
     <configurationGroup names="Document">
         <configurationParameter>
           <name>document_sentiment</name>
-          <description>Set this to true to enable document-level sentiment analysis.</description>
+          <description>Set this to true to enable document-level sentiment analysis.
+Note that if document level analysis is enabled then either this parameter or document_emotion or both must be set to true.</description>
           <type>Boolean</type>
           <multiValued>false</multiValued>
           <mandatory>true</mandatory>
         </configurationParameter>
         <configurationParameter>
           <name>document_emotion</name>
-          <description>Set this to true to enable document-level emotion analysis.</description>
+          <description>Set this to true to enable document-level emotion analysis.
+Note that if document level analysis is enabled then either this parameter or document_sentiment or both must be set to true.</description>
           <type>Boolean</type>
           <multiValued>false</multiValued>
           <mandatory>true</mandatory>
         </configurationParameter>
+      </configurationGroup>
+    <configurationGroup names="Custom">
         <configurationParameter>
-          <name>document_enable</name>
-          <description>Enable document level analysis.</description>
-          <type>Boolean</type>
+          <name>custom_model_id</name>
+          <description>Enter a model ID for custom entity identification. Set to 'none' to disable custom model processing.</description>
+          <type>String</type>
           <multiValued>false</multiValued>
           <mandatory>true</mandatory>
         </configurationParameter>
       </configurationGroup>
     </configurationParameters>
     <configurationParameterSettings>
-      <settingsForGroup name="Document">
-        <nameValuePair>
-          <name>document_enable</name>
+    <nameValuePair>
+          <name>enable_default_documentlevel</name>
           <value>
             <boolean>true</boolean>
           </value>
         </nameValuePair>
         <nameValuePair>
-          <name>document_emotion</name>
+          <name>enable_default_entities</name>
           <value>
             <boolean>true</boolean>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>enable_custom_entities</name>
+          <value>
+            <boolean>false</boolean>
+          </value>
+        </nameValuePair>
+      <settingsForGroup name="Custom">
+        <nameValuePair>
+          <name>custom_model_id</name>
+          <value>
+            <string>none</string>
+          </value>
+        </nameValuePair>
+      </settingsForGroup>
+      <settingsForGroup name="Document">
+        <nameValuePair>
+          <name>document_emotion</name>
+          <value>
+            <boolean>false</boolean>
           </value>
         </nameValuePair>
         <nameValuePair>
@@ -114,12 +145,6 @@
       </settingsForGroup>
       <settingsForGroup name="Entities">
         <nameValuePair>
-          <name>entity_enable</name>
-          <value>
-            <boolean>true</boolean>
-          </value>
-        </nameValuePair>
-        <nameValuePair>
           <name>entity_emotion</name>
           <value>
             <boolean>false</boolean>
@@ -129,12 +154,6 @@
           <name>entity_sentiment</name>
           <value>
             <boolean>true</boolean>
-          </value>
-        </nameValuePair>
-        <nameValuePair>
-          <name>model</name>
-          <value>
-            <string>default</string>
           </value>
         </nameValuePair>
       </settingsForGroup>
@@ -181,9 +200,14 @@
               <description/>
               <rangeTypeName>uima.cas.String</rangeTypeName>
             </featureDescription>
+          <featureDescription>
+              <name>source</name>
+              <description>The source of the entity either "default" or a custom model id.</description>
+              <rangeTypeName>uima.cas.String</rangeTypeName>
+            </featureDescription>
           </features>
         </typeDescription>
-      <typeDescription>
+        <typeDescription>
           <name>com.mnsuk.nlu.Document</name>
           <description/>
           <supertypeName>uima.tcas.Annotation</supertypeName>

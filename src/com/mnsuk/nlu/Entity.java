@@ -11,7 +11,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Thu Apr 06 10:35:54 BST 2017
+ * Updated by JCasGen Mon Oct 23 18:03:32 BST 2017
  * XML source: /Users/martin/Documents/Development/Java/Annotators/NLU/desc/NLU-ae.xml
  * @generated */
 public class Entity extends Annotation {
@@ -228,6 +228,28 @@ public class Entity extends Annotation {
     if (Entity_Type.featOkTst && ((Entity_Type)jcasType).casFeat_sadness == null)
       jcasType.jcas.throwFeatMissing("sadness", "com.mnsuk.nlu.Entity");
     jcasType.ll_cas.ll_setStringValue(addr, ((Entity_Type)jcasType).casFeatCode_sadness, v);}    
+   
+    
+  //*--------------*
+  //* Feature: source
+
+  /** getter for source - gets The source of the entity either "default" or a custom model id.
+   * @generated
+   * @return value of the feature 
+   */
+  public String getSource() {
+    if (Entity_Type.featOkTst && ((Entity_Type)jcasType).casFeat_source == null)
+      jcasType.jcas.throwFeatMissing("source", "com.mnsuk.nlu.Entity");
+    return jcasType.ll_cas.ll_getStringValue(addr, ((Entity_Type)jcasType).casFeatCode_source);}
+    
+  /** setter for source - sets The source of the entity either "default" or a custom model id. 
+   * @generated
+   * @param v value to set into the feature 
+   */
+  public void setSource(String v) {
+    if (Entity_Type.featOkTst && ((Entity_Type)jcasType).casFeat_source == null)
+      jcasType.jcas.throwFeatMissing("source", "com.mnsuk.nlu.Entity");
+    jcasType.ll_cas.ll_setStringValue(addr, ((Entity_Type)jcasType).casFeatCode_source, v);}    
   }
 
     

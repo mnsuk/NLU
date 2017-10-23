@@ -11,7 +11,7 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.jcas.tcas.Annotation_Type;
 
 /** 
- * Updated by JCasGen Thu Apr 06 10:35:54 BST 2017
+ * Updated by JCasGen Mon Oct 23 18:03:32 BST 2017
  * @generated */
 public class Entity_Type extends Annotation_Type {
   /** @generated */
@@ -189,6 +189,30 @@ public class Entity_Type extends Annotation_Type {
     ll_cas.ll_setStringValue(addr, casFeatCode_sadness, v);}
     
   
+ 
+  /** @generated */
+  final Feature casFeat_source;
+  /** @generated */
+  final int     casFeatCode_source;
+  /** @generated
+   * @param addr low level Feature Structure reference
+   * @return the feature value 
+   */ 
+  public String getSource(int addr) {
+        if (featOkTst && casFeat_source == null)
+      jcas.throwFeatMissing("source", "com.mnsuk.nlu.Entity");
+    return ll_cas.ll_getStringValue(addr, casFeatCode_source);
+  }
+  /** @generated
+   * @param addr low level Feature Structure reference
+   * @param v value to set 
+   */    
+  public void setSource(int addr, String v) {
+        if (featOkTst && casFeat_source == null)
+      jcas.throwFeatMissing("source", "com.mnsuk.nlu.Entity");
+    ll_cas.ll_setStringValue(addr, casFeatCode_source, v);}
+    
+  
 
 
 
@@ -228,6 +252,10 @@ public class Entity_Type extends Annotation_Type {
  
     casFeat_sadness = jcas.getRequiredFeatureDE(casType, "sadness", "uima.cas.String", featOkTst);
     casFeatCode_sadness  = (null == casFeat_sadness) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_sadness).getCode();
+
+ 
+    casFeat_source = jcas.getRequiredFeatureDE(casType, "source", "uima.cas.String", featOkTst);
+    casFeatCode_source  = (null == casFeat_source) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_source).getCode();
 
   }
 }

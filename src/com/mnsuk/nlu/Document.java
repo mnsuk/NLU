@@ -11,7 +11,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Thu Apr 06 10:35:54 BST 2017
+ * Updated by JCasGen Mon Oct 23 18:03:32 BST 2017
  * XML source: /Users/martin/Documents/Development/Java/Annotators/NLU/desc/NLU-ae.xml
  * @generated */
 public class Document extends Annotation {
