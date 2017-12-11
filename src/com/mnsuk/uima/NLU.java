@@ -30,6 +30,7 @@ import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.Em
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.EmotionScores;
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.EntitiesOptions;
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.EntitiesResult;
+import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.EntityMention;
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.FeatureSentimentResults;
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.Features;
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.ListModelsResults;
@@ -112,9 +113,11 @@ public class NLU extends JCasAnnotator_ImplBase {
 		// validate any custom model
 		if (pCustomEnable) {
 			NaturalLanguageUnderstanding nlu = new NaturalLanguageUnderstanding(NaturalLanguageUnderstanding.VERSION_DATE_2017_02_27, pUsername, pPassword);
-			ListModelsResults models = nlu
+			/*ListModelsResults models = nlu
 					.getModels()
 					.execute();		
+			List<Model> modelList = models.getModels();*/
+			ListModelsResults models = nlu.listModels().execute();
 			List<Model> modelList = models.getModels();
 			Gson gson = new Gson();
 			boolean validModel = false;
@@ -164,7 +167,8 @@ public class NLU extends JCasAnnotator_ImplBase {
 			 * so create an annotation over a section of text instead. 
 			 */
 			if (pDocumentEnable) {
-				int end = text.length() > 256 ? 256 : text.length();
+				// int end = text.length() > 256 ? 256 : text.length();
+				int end = text.length();
 				Document doc = new Document(jcas, 0, end);
 				if (pDocumentEmotion) {
 					EmotionResult emotionResult = standardResults.getEmotion();
@@ -195,16 +199,18 @@ public class NLU extends JCasAnnotator_ImplBase {
 			if (pEntityEnable) {
 				List<EntitiesResult> er = standardResults.getEntities();
 				for (EntitiesResult res : er) {
-					int count = res.getCount();
-					int offset = 0;
-					int len = res.getText().length();
+					Long count = res.getCount();
 					FeatureSentimentResults fsr = null;
 					EmotionScores es = null;
-
+					
 					for (int i=0; i<count; i++) {
-						int start = text.indexOf(res.getText(), offset);
-						if ( start >= 0) {
-							int end = start + len;
+						List<EntityMention> em = res.getMentions();
+						if (em == null || em.isEmpty())
+							continue;
+						for (EntityMention mention : em) {
+							List<Long> offsets = mention.getLocation();
+							int start = offsets.get(0).intValue();
+							int end = offsets.get(1).intValue();
 							Entity ent = new Entity(jcas,start, end);
 							ent.setSource("default");
 							ent.setEntityType(res.getType());
@@ -225,10 +231,9 @@ public class NLU extends JCasAnnotator_ImplBase {
 								}
 							}
 							jcas.addFsToIndexes(ent);
-							logger.log(Level.INFO, "NLU: processed anno: " + ent.getCoveredText() + " XXX "+ ent.toString());
+							logger.log(Level.INFO, "NLU: processed custom anno: " + ent.getCoveredText() + " XXX "+ ent.toString());
 						}
-
-					}		
+					}
 				}
 			}
 		}
@@ -247,11 +252,25 @@ public class NLU extends JCasAnnotator_ImplBase {
 
 			List<EntitiesResult> er = customResults.getEntities();
 			for (EntitiesResult res : er) {
-				int count = res.getCount();
-				int offset = 0;
-				int len = res.getText().length();
-
+				Long count = res.getCount();
+				
 				for (int i=0; i<count; i++) {
+					List<EntityMention> em = res.getMentions();
+					if (em == null || em.isEmpty())
+						continue;
+					for (EntityMention mention : em) {
+						List<Long> offsets = mention.getLocation();
+						int start = offsets.get(0).intValue();
+						int end = offsets.get(1).intValue();
+						Entity ent = new Entity(jcas,start, end);
+						ent.setSource(pModel);
+						ent.setEntityType(res.getType());
+						jcas.addFsToIndexes(ent);
+						logger.log(Level.INFO, "NLU: processed custom anno: " + ent.getCoveredText() + " XXX "+ ent.toString());
+					}
+				}
+
+				/*for (int i=0; i<count; i++) {
 					int start = text.indexOf(res.getText(), offset);
 					if ( start >= 0) {
 						int end = start + len;
@@ -260,9 +279,10 @@ public class NLU extends JCasAnnotator_ImplBase {
 						ent.setEntityType(res.getType());
 						jcas.addFsToIndexes(ent);
 						logger.log(Level.INFO, "NLU: processed custom anno: " + ent.getCoveredText() + " XXX "+ ent.toString());
+						offset=end;
 					}
 
-				}		
+				}	*/	
 			}
 		}
 
@@ -295,6 +315,7 @@ public class NLU extends JCasAnnotator_ImplBase {
 		if (entityEnable && !customEnable) {
 			entities = new EntitiesOptions.Builder()
 					.limit(20)
+					.mentions(true)
 					.sentiment(entitySentiment)
 					.emotion(entityEmotion)
 					.build();
@@ -302,6 +323,7 @@ public class NLU extends JCasAnnotator_ImplBase {
 		if (entityEnable && customEnable) {
 			entities = new EntitiesOptions.Builder()
 					.limit(20)
+					.mentions(true)
 					.sentiment(entitySentiment)
 					.emotion(entityEmotion)
 					.model(model)
@@ -310,6 +332,7 @@ public class NLU extends JCasAnnotator_ImplBase {
 		if (!entityEnable && customEnable) {
 			entities = new EntitiesOptions.Builder()
 					.limit(20)
+					.mentions(true)
 					.model(model)
 					.build();
 		}

@@ -1,2 +1,5 @@
+Version 1.3.0 Port to Watson Java SDK 4.10.
+Version 1.2.2 Changed document level highlighting to cover all the text.
+Version 1.2.1 fixed problem in text highlighting for duplicated entities.
 Version 1.2 custom model support
 Version 1.0 
